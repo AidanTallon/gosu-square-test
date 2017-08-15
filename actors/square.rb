@@ -76,6 +76,9 @@ class Square
 
   def jumping_action(controls)
     b_down = controls.buttons_down
+    if @current_vertical_velocity <= 0 and b_down.include? controls.down
+      @current_vertical_velocity = @min_vertical_velocity
+    end
     if b_down.include? controls.left
       move_left(@air_speed)
     end

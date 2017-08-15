@@ -1,0 +1,10 @@
+window_height: 640
+window_width: 480
+fullscreen?: false
+controls:
+  up: 82
+  right: 79
+  down: 81
+  left: 80
+  action: 44
+  exit: 41

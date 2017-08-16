@@ -10,7 +10,7 @@ class Square
     @state = :standing
     @ground_speed = 2
     @air_speed = 1
-    @max_air_jumps = 1
+    @max_air_jumps = 2
 
     @initial_vertical_velocity = 20
     @initial_shorthop_vertical_velocity = 12
@@ -63,13 +63,11 @@ class Square
   def start_jump
     @current_vertical_velocity = @fullhop ? @initial_vertical_velocity : @initial_shorthop_vertical_velocity
     @state = :jumping
-    @jump_button_held = true
   end
 
   def air_jump
     @current_vertical_velocity = @initial_vertical_velocity
     @air_jumps -= 1
-    @jump_button_held = true
   end
 
   def jumpsquat_action(controls)
@@ -84,10 +82,7 @@ class Square
 
   def jumping_action(controls)
     b_down = controls.buttons_down
-    if @jump_button_held and !b_down.include? controls.up
-      @jump_button_held = false
-    end
-    if @air_jumps > 0 and b_down.include? controls.up and !@jump_button_held
+    if @air_jumps > 0 and controls.buttons_pressed_this_frame.include? controls.up
       air_jump
     end
     if @current_vertical_velocity <= 0 and b_down.include? controls.down

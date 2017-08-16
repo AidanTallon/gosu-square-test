@@ -6,6 +6,7 @@ class TestScene
   end
 
   def update
+    @controls.update
     @square.update @controls
   end
 

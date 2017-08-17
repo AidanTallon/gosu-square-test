@@ -1,8 +1,13 @@
 class TestScene
+  attr_reader :width, :height
+
   def initialize
+    @width = 1000
+    @height = 1000
+
     @controls = Controls.new($config.data['controls'])
 
-    @square = Square.new(500, 0)
+    @square = Square.new(self, 500, 0)
   end
 
   def update

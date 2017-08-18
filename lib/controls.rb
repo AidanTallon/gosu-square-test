@@ -1,11 +1,13 @@
 class Controls
-  attr_reader :buttons_pressed_this_frame
+  attr_reader :buttons_pressed_this_frame, :input_queue
 
   def initialize(controls_dict)
     @controls = controls_dict
 
     @buttons_pressed_prev_frame = []
     @buttons_pressed_this_frame = []
+
+    @input_queue = InputQueue.new self
   end
 
   def [](key_name)
@@ -32,5 +34,6 @@ class Controls
     b_down = buttons_down
     @buttons_pressed_this_frame = b_down - @buttons_pressed_prev_frame
     @buttons_pressed_prev_frame = b_down
+    @input_queue.update
   end
 end

@@ -2,17 +2,15 @@ class TestScene
   def initialize
     @controls = Controls.new($config.data['controls'])
 
-    @square = Square.new(500, 0)
+    @square = Square.new(@controls, 500, 0)
   end
 
   def update
-    @controls.update
-    @square.update @controls
+    @square.update
   end
 
   def draw
     @square.draw
-    #Gosu::draw_rect(@square.x, $window.height - @square.y - @square.height, @square.width, @square.height, Gosu::Color::WHITE)
   end
 
   def button_down(id)

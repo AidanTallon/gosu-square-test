@@ -8,7 +8,7 @@ class Square
     @height = height
     @jumpsquat_length = 4
     @state = :standing
-    @ground_speed = 2
+    @ground_speed = 4
     @air_speed = 1
     @max_air_jumps = 2
     @facing = :left
@@ -18,7 +18,7 @@ class Square
     @min_vertical_velocity = -20
     @current_vertical_velocity = 0
     @dash_length = 15
-    @dash_speed = 5
+    @dash_speed = 10
     @dash_remaining = 0
 
     @controls = controls

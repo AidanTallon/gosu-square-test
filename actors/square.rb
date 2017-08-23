@@ -14,7 +14,8 @@ class Square
                 :x, :y,
                 :current_vertical_velocity
 
-  def initialize(x_pos, y_pos, width = 50, height = 50)
+  def initialize(location_helper, x_pos, y_pos, width = 50, height = 50)
+    @loc = location_helper
     @x = x_pos
     @y = y_pos
     @width = width
@@ -30,8 +31,6 @@ class Square
     @min_vertical_velocity = -20
     @current_vertical_velocity = 0
 
-
-    # states
     @standing_state = Standing.new self
     @crouching_state = Crouching.new self
     @jumpsquat_state = Jumpsquat.new self

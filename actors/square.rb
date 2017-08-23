@@ -1,5 +1,18 @@
 class Square
-  attr_reader :x, :y, :width, :height
+  attr_reader :width, :height,
+              :jumpsquat_length,
+              :ground_speed,
+              :air_speed,
+              :max_air_jumps,
+              :initial_vertical_velocity,
+              :initial_shorthop_vertical_velocity,
+              :min_vertical_velocity
+
+  attr_accessor :active_jumpsquat,
+                :full_hop,
+                :air_jumps,
+                :x, :y,
+                :current_vertical_velocity
 
   def initialize(x_pos, y_pos, width = 50, height = 50)
     @x = x_pos
@@ -16,34 +29,38 @@ class Square
     @initial_shorthop_vertical_velocity = 12
     @min_vertical_velocity = -20
     @current_vertical_velocity = 0
+
+
+    # states
+    @standing_state = Standing.new self
+    @crouching_state = Crouching.new self
+    @jumpsquat_state = Jumpsquat.new self
+    @jumping_state = Jumping.new self
+
+    @state = @standing_state
   end
 
-  def draw
-    if @state == :jumpsquat
-      jumpsquat_draw
-    elsif @state == :crouching
-      crouching_draw
-    elsif @state == :standing
-      standing_draw
-    elsif @state == :jumping
-      jumping_draw
+  def enter_state(state)
+    if state == :jumpsquat
+      @full_hop = true
+      @active_jumpsquat = @jumpsquat_length
+      @state = @jumpsquat_state
+    elsif state == :jumping
+      @current_vertical_velocity = @full_hop ? @initial_vertical_velocity : @initial_shorthop_vertical_velocity
+      @state = @jumping_state
+    elsif state == :crouching
+      @state = @crouching_state
+    elsif state == :standing
+      @state = @standing_state
     end
   end
 
-  def crouching_draw
-    Gosu::draw_rect(@x, $window.height - @y - (@height / 2), @width, @height / 2, Gosu::Color::WHITE)
+  def refresh_air_jumps
+    @air_jumps = @max_air_jumps
   end
 
-  def standing_draw
-    Gosu::draw_rect(@x, $window.height - @y - @height, @width, @height, Gosu::Color::WHITE)
-  end
-
-  def jumping_draw
-    Gosu::draw_rect(@x, $window.height - @y - @height, @width, @height, Gosu::Color::WHITE)
-  end
-
-  def jumpsquat_draw
-    Gosu::draw_rect(@x, $window.height - @y - (@height / 2), @width, @height / 2, Gosu::Color::WHITE)
+  def draw
+    @state.draw
   end
 
   def move_left(dist)
@@ -54,91 +71,7 @@ class Square
     @x += dist
   end
 
-  def start_jumpsquat
-    @state = :jumpsquat
-    @fullhop = true
-    @active_jumpsquat = @jumpsquat_length
-  end
-
-  def start_jump
-    @current_vertical_velocity = @fullhop ? @initial_vertical_velocity : @initial_shorthop_vertical_velocity
-    @state = :jumping
-  end
-
-  def air_jump
-    @current_vertical_velocity = @initial_vertical_velocity
-    @air_jumps -= 1
-  end
-
-  def jumpsquat_action(controls)
-    if !controls.buttons_down.include? controls.up
-      @fullhop = false
-    end
-    @active_jumpsquat -= 1
-    if @active_jumpsquat <= 0
-      start_jump
-    end
-  end
-
-  def jumping_action(controls)
-    b_down = controls.buttons_down
-    if @air_jumps > 0 and controls.buttons_pressed_this_frame.include? controls.up
-      air_jump
-    end
-    if @current_vertical_velocity <= 0 and b_down.include? controls.down
-      @current_vertical_velocity = @min_vertical_velocity
-    end
-    if b_down.include? controls.left
-      move_left(@air_speed)
-    end
-    if b_down.include? controls.right
-      move_right(@air_speed)
-    end
-    @y += (@current_vertical_velocity / 2)
-    @current_vertical_velocity = [@current_vertical_velocity - 1, @min_vertical_velocity].max
-    if @y <= 0
-      @y = 0
-      @state = :standing
-    end
-  end
-
-  def standing_action(controls)
-    @air_jumps = @max_air_jumps
-    b_down = controls.buttons_down
-    if b_down.include? controls.up
-      start_jumpsquat
-    end
-    if b_down.include? controls.left
-      move_left(@ground_speed)
-    end
-    if b_down.include? controls.right
-      move_right(@ground_speed)
-    end
-    if b_down.include? controls.down
-      @state = :crouching
-    end
-  end
-
-  def crouching_action(controls)
-    @air_jumps = @max_air_jumps
-    b_down = controls.buttons_down
-    if !b_down.include? controls.down
-      @state = :standing
-    end
-    if b_down.include? controls.up
-      start_jumpsquat
-    end
-  end
-
   def update(controls)
-    if @state == :jumpsquat
-      jumpsquat_action(controls)
-    elsif @state == :jumping
-      jumping_action(controls)
-    elsif @state == :standing
-      standing_action(controls)
-    elsif @state == :crouching
-      crouching_action(controls)
-    end
+    @state.action controls
   end
 end

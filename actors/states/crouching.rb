@@ -1,4 +1,5 @@
 class Crouching
+  # actor corresponds to the actor who possesses this state
   def initialize(actor)
     @actor = actor
   end
@@ -8,7 +9,12 @@ class Crouching
   end
 
   def action(controls)
+    # refresh air jumps on every loop - would this have a preformance cost?
     @actor.refresh_air_jumps
+
+    #available inputs
+    # - up to enter jumpsquat
+    # - down must be held to remain crouching
     b_down = controls.buttons_down
     if !b_down.include? controls.down
       @actor.enter_state :standing

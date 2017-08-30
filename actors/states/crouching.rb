@@ -5,7 +5,11 @@ class Crouching
   end
 
   def draw
-    Gosu::draw_rect(@actor.x, $window.height - @actor.y - (@actor.height / 2), @actor.width, @actor.height / 2, Gosu::Color::WHITE)
+    Gosu::draw_rect(@actor.scene.screen_x(@actor.x),
+                    @actor.scene.screen_y(@actor.y  + (@actor.height / 2)),
+                    @actor.scene.screen_width(@actor.width),
+                    @actor.scene.screen_height(@actor.height / 2),
+                    Gosu::Color::WHITE)
   end
 
   def action(controls)

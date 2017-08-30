@@ -6,7 +6,8 @@ class Square
               :max_air_jumps,
               :initial_vertical_velocity,
               :initial_shorthop_vertical_velocity,
-              :min_vertical_velocity
+              :min_vertical_velocity,
+              :scene
 
   attr_accessor :active_jumpsquat,
                 :full_hop,
@@ -14,8 +15,8 @@ class Square
                 :x, :y,
                 :current_vertical_velocity
 
-  def initialize(location_helper, x_pos, y_pos, width = 50, height = 50)
-    @loc = location_helper
+  def initialize(scene, x_pos, y_pos, width = 50, height = 50)
+    @scene = scene
     @x = x_pos
     @y = y_pos
     @width = width

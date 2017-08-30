@@ -5,7 +5,11 @@ class Jumping
   end
 
   def draw
-    Gosu::draw_rect(@actor.x, $window.height - @actor.y - @actor.height, @actor.width, @actor.height, Gosu::Color::WHITE)
+    Gosu::draw_rect(@actor.scene.screen_x(@actor.x),
+                    @actor.scene.screen_y(@actor.y + @actor.height),
+                    @actor.scene.screen_width(@actor.width),
+                    @actor.scene.screen_height(@actor.height),
+                    Gosu::Color::WHITE)
   end
 
   def action(controls)

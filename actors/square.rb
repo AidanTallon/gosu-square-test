@@ -15,25 +15,26 @@ class Square
                 :x, :y,
                 :current_vertical_velocity
 
-  def initialize(scene, x_pos, y_pos, width = 50, height = 50)
+  def initialize(scene, x_pos, y_pos, params)
     @scene = scene
+
     @x = x_pos
     @y = y_pos
-    @width = width
-    @height = height
+    @width = params['width']
+    @height = params['height']
 
-    @jumpsquat_length = 10
+    @jumpsquat_length = params['jumpsquat_length']
 
-    @ground_speed = 2
-    @air_speed = 1
-    @max_air_jumps = 1
+    @ground_speed = params['ground_speed']
+    @air_speed = params['air_speed']
+    @max_air_jumps = params['max_air_jumps']
 
     # velocity at start of jump
-    @initial_vertical_velocity = 20
+    @initial_vertical_velocity = params['initial_vertical_velocity']
     # velocity at start of jump while short hopping
-    @initial_shorthop_vertical_velocity = 12
+    @initial_shorthop_vertical_velocity = params['initial_shorthop_vertical_velocity']
     # lower values mean a faster MAX fall speed
-    @min_vertical_velocity = -20
+    @min_vertical_velocity = params['min_vertical_velocity']
     # just means you're not moving up or down - probably shouldn't need to be set to 0 in init
     @current_vertical_velocity = 0
 

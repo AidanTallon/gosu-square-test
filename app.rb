@@ -8,7 +8,7 @@ Dir['./actors/*.rb'].each { |f| require f }
 Dir['./actors/states/*.rb'].each { |f| require f }
 
 $config = Config.new './config.yml'
-$gameData = GameData.new './data.yml'
+$gameData = GameData.new './data.yml', './characters.yml'
 
 $window = MainWindow.new
 

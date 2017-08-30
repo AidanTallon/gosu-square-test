@@ -1,8 +1,9 @@
 class GameData
-  attr_reader :data
+  attr_reader :data, :characters
 
-  def initialize(yaml_path)
-    @data = YAML.load File.new(yaml_path)
+  def initialize(data_yaml_path, char_yaml_path)
+    @data = YAML.load File.new(data_yaml_path)
+    @characters = YAML.load File.new(char_yaml_path)
   end
 
   def [](key_name)

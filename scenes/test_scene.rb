@@ -8,7 +8,7 @@ class TestScene
 
     @controls = Controls.new($config.data['controls'])
 
-    @square = Square.new(self, 500, 0)
+    @square = Square.new(self, 500, 0, $gameData.characters['jigglysquare'])
   end
 
   def update

@@ -6,8 +6,6 @@ class TestScene
     @width = 1000
     @height = 800
 
-    #@location = LocationHelper.new @width, @height
-
     @controls = Controls.new($config.data['controls'])
 
     @square = Square.new(self, 500, 0)

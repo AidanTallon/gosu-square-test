@@ -1,8 +1,8 @@
 class Square
   attr_reader :x, :y, :width, :height
 
-  def initialize(location_helper, x_pos, y_pos, width = 50, height = 50)
-    @loc = location_helper
+  def initialize(scene, x_pos, y_pos, width = 50, height = 50)
+    @scene = scene
     @x = x_pos
     @y = y_pos
     @width = width
@@ -32,19 +32,19 @@ class Square
   end
 
   def crouching_draw
-    Gosu::draw_rect(@loc.screen_x(@x), @loc.screen_y(@y  + (@height / 2)), @loc.screen_width(@width), @loc.screen_height(@height / 2), Gosu::Color::WHITE)
+    Gosu::draw_rect(@scene.screen_x(@x), @scene.screen_y(@y  + (@height / 2)), @scene.screen_width(@width), @scene.screen_height(@height / 2), Gosu::Color::WHITE)
   end
 
   def standing_draw
-    Gosu::draw_rect(@loc.screen_x(@x), @loc.screen_y(@y + @height), @loc.screen_width(@width), @loc.screen_height(@height), Gosu::Color::WHITE)
+    Gosu::draw_rect(@scene.screen_x(@x), @scene.screen_y(@y + @height), @scene.screen_width(@width), @scene.screen_height(@height), Gosu::Color::WHITE)
   end
 
   def jumping_draw
-    Gosu::draw_rect(@loc.screen_x(@x), @loc.screen_y(@y + @height), @loc.screen_width(@width), @loc.screen_height(@height), Gosu::Color::WHITE)
+    Gosu::draw_rect(@scene.screen_x(@x), @scene.screen_y(@y + @height), @scene.screen_width(@width), @scene.screen_height(@height), Gosu::Color::WHITE)
   end
 
   def jumpsquat_draw
-    Gosu::draw_rect(@loc.screen_x(@x), @loc.screen_y(@y + (@height / 2)), @loc.screen_width(@width), @loc.screen_height(@height / 2), Gosu::Color::WHITE)
+    Gosu::draw_rect(@scene.screen_x(@x), @scene.screen_y(@y + (@height / 2)), @scene.screen_width(@width), @scene.screen_height(@height / 2), Gosu::Color::WHITE)
   end
 
   def move_left(dist)

@@ -1,0 +1,8 @@
+TODO
+
+  - input queue - re write lots of button down this frame stuff?
+    - end of jumpsquat check for buttons held? - won't work if queue is shorter than jumpsquat length
+  - platforms - checking if grounded etc
+  - atm fastfall has no effect if already at min velocity - maybe introduce fastfall velocity value?
+  - dashing
+  - moves

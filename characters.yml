@@ -1,0 +1,38 @@
+square:
+  width: 100
+  height: 100
+  jumpsquat_length: 10
+  ground_speed: 2
+  air_speed: 1
+  max_air_jumps: 1
+  initial_vertical_velocity: 20
+  initial_shorthop_vertical_velocity: 12
+  min_vertical_velocity: -20
+  dash_speed: 3
+  dash_duration: 30
+
+rectangle:
+  width: 80
+  height: 120
+  jumpsquat_length: 6
+  ground_speed: 2
+  air_speed: 1
+  max_air_jumps: 1
+  initial_vertical_velocity: 15
+  initial_vertical_velocity: 8
+  min_vertical_velocity: -25
+  dash_speed: 2
+  dash_duration: 30
+
+jigglysquare:
+  width: 50
+  height: 50
+  jumpsquat_length: 4
+  ground_speed: 1
+  air_speed: 2
+  max_air_jumps: 5
+  initial_vertical_velocity: 18
+  initial_shorthop_vertical_velocity: 15
+  min_vertical_velocity: -10
+  dash_speed: 3
+  dash_duration: 15

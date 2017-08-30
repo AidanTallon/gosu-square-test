@@ -1,189 +1,118 @@
 class Square
-  attr_reader :x, :y, :width, :height
+  attr_reader :width, :height,
+              :jumpsquat_length,
+              :ground_speed,
+              :air_speed,
+              :max_air_jumps,
+              :initial_vertical_velocity,
+              :initial_shorthop_vertical_velocity,
+              :min_vertical_velocity,
+              :scene,
+              :controls,
+              :dash_speed
 
-  def initialize(controls, x_pos, y_pos, width = 50, height = 50)
-    @x = x_pos
-    @y = y_pos
-    @width = width
-    @height = height
-    @jumpsquat_length = 4
-    @state = :standing
-    @ground_speed = 4
-    @air_speed = 1
-    @max_air_jumps = 2
-    @facing = :left
+  attr_accessor :active_jumpsquat,
+                :full_hop,
+                :air_jumps,
+                :x, :y,
+                :current_vertical_velocity,
+                :active_dash
 
-    @initial_vertical_velocity = 20
-    @initial_shorthop_vertical_velocity = 12
-    @min_vertical_velocity = -20
-    @current_vertical_velocity = 0
-    @dash_length = 15
-    @dash_speed = 10
-    @dash_remaining = 0
+  def initialize(scene, x_pos, y_pos, controls, params)
+    @scene = scene
 
     @controls = controls
+
+    @x = x_pos
+    @y = y_pos
+    @width = params['width']
+    @height = params['height']
+
+    @jumpsquat_length = params['jumpsquat_length']
+
+    @ground_speed = params['ground_speed']
+    @air_speed = params['air_speed']
+    @max_air_jumps = params['max_air_jumps']
+
+    @dash_speed = params['dash_speed']
+    @dash_duration = params['dash_duration']
+
+    # hard coded?
+    @facing = :right
+
+    # velocity at start of jump
+    @initial_vertical_velocity = params['initial_vertical_velocity']
+    # velocity at start of jump while short hopping
+    @initial_shorthop_vertical_velocity = params['initial_shorthop_vertical_velocity']
+    # lower values mean a faster MAX fall speed
+    @min_vertical_velocity = params['min_vertical_velocity']
+    # just means you're not moving up or down - probably shouldn't need to be set to 0 in init
+    @current_vertical_velocity = 0
+
+    # states available to actor
+    @standing_state = Standing.new self
+    @crouching_state = Crouching.new self
+    @jumpsquat_state = Jumpsquat.new self
+    @jumping_state = Jumping.new self
+    @dashing_state = Dashing.new self
+
+    # initial state should be calculated, not hard coded - what if you spawn in air?
+    @state = @standing_state
   end
 
-  def draw
-    if @state == :jumpsquat
-      jumpsquat_draw
-    elsif @state == :crouching
-      crouching_draw
-    elsif @state == :standing
-      standing_draw
-    elsif @state == :jumping
-      jumping_draw
-    elsif @state == :dashing
-      dashing_draw
+  # changes @state to corresponding state, as well as holding rules for entering state
+  # e.g. when entering jumpsquat, set @active_jumpsquat to @jumpsquat_length to begin counting down jumpsquat frames
+  def enter_state(state)
+    if state == :jumpsquat
+      @full_hop = true
+      @active_jumpsquat = @jumpsquat_length
+      @state = @jumpsquat_state
+    elsif state == :jumping
+      @current_vertical_velocity = @full_hop ? @initial_vertical_velocity : @initial_shorthop_vertical_velocity
+      @state = @jumping_state
+    elsif state == :crouching
+      @state = @crouching_state
+    elsif state == :standing
+      @state = @standing_state
+    elsif state == :dashing
+      @active_dash = @dash_duration
+      @state = @dashing_state
     end
   end
 
-  def crouching_draw
-    Gosu::draw_rect(@x, $window.height - @y - (@height / 2), @width, @height / 2, Gosu::Color::WHITE)
+  # called in the update loop for corresponding states, as opposed to when entering the state
+  # just in case? maybe that should be changed
+  def refresh_air_jumps
+    @air_jumps = @max_air_jumps
   end
 
-  def standing_draw
-    Gosu::draw_rect(@x, $window.height - @y - @height, @width, @height, Gosu::Color::WHITE)
+  # draw the actor as specified by it's current state
+  def draw
+    @state.draw
   end
 
-  def jumping_draw
-    Gosu::draw_rect(@x, $window.height - @y - @height, @width, @height, Gosu::Color::WHITE)
+  def facing
+    @facing
   end
 
-  def jumpsquat_draw
-    Gosu::draw_rect(@x, $window.height - @y - (@height / 2), @width, @height / 2, Gosu::Color::WHITE)
+  def facing=(dir)
+    @facing = dir
   end
 
-  def dashing_draw
-    standing_draw
-  end
-
+  # maybe should be move_x ?
   def move_left(dist)
     @x -= dist
   end
 
+  # maybe should be move_x ?
   def move_right(dist)
     @x += dist
   end
 
-  def start_jumpsquat
-    @state = :jumpsquat
-    @fullhop = true
-    @active_jumpsquat = @jumpsquat_length
-  end
-
-  def start_jump
-    @current_vertical_velocity = @fullhop ? @initial_vertical_velocity : @initial_shorthop_vertical_velocity
-    @state = :jumping
-  end
-
-  def air_jump
-    @current_vertical_velocity = @initial_vertical_velocity
-    @air_jumps -= 1
-  end
-
-  def jumpsquat_action
-    if !@controls.buttons_down.include? @controls.up
-      @fullhop = false
-    end
-    @active_jumpsquat -= 1
-    if @active_jumpsquat <= 0
-      start_jump
-    end
-  end
-
-  def jumping_action
-    b_down = @controls.buttons_down
-    if @air_jumps > 0 and @controls.buttons_pressed_this_frame.include? @controls.up
-      air_jump
-    end
-    if @current_vertical_velocity <= 0 and b_down.include? @controls.down
-      @current_vertical_velocity = @min_vertical_velocity
-    end
-    if b_down.include? @controls.left
-      move_left(@air_speed)
-    end
-    if b_down.include? @controls.right
-      move_right(@air_speed)
-    end
-    @y += (@current_vertical_velocity / 2)
-    @current_vertical_velocity = [@current_vertical_velocity - 1, @min_vertical_velocity].max
-    if @y <= 0
-      @y = 0
-      @state = :standing
-    end
-  end
-
-  def standing_action
-    @air_jumps = @max_air_jumps
-    b_down = @controls.buttons_down
-    if @controls.input_queue.check_for :dash
-      start_dash
-    end
-    if b_down.include? @controls.up
-      start_jumpsquat
-    end
-    if b_down.include? @controls.left
-      move_left(@ground_speed)
-    end
-    if b_down.include? @controls.right
-      move_right(@ground_speed)
-    end
-    if b_down.include? @controls.down
-      @state = :crouching
-    end
-  end
-
-  def crouching_action
-    @air_jumps = @max_air_jumps
-    b_down = @controls.buttons_down
-    if !b_down.include? @controls.down
-      @state = :standing
-    end
-    if b_down.include? @controls.up
-      start_jumpsquat
-    end
-  end
-
-  def dashing_action
-    if @controls.buttons_down.include? @controls.down
-      @state = :crouching
-    end
-    if @dash_remaining > 0
-      if @facing == :left
-        @x -= @dash_speed
-      elsif @facing == :right
-        @x += @dash_speed
-      end
-      @dash_remaining -= 1
-    else
-      @state = :standing
-    end
-  end
-
-  def start_dash
-    b_down = @controls.buttons_down
-    @dash_remaining = @dash_length
-    if b_down.include? @controls.left
-      @facing = :left
-    elsif b_down.include? @controls.right
-      @facing = :right
-    end
-    @state = :dashing
-  end
-
+  # call the states update method, where possible actions are specified
   def update
-    @controls.update
-    if @state == :jumpsquat
-      jumpsquat_action
-    elsif @state == :jumping
-      jumping_action
-    elsif @state == :standing
-      standing_action
-    elsif @state == :crouching
-      crouching_action
-    elsif @state == :dashing
-      dashing_action
-    end
+    # TODO - params for dashing (facing)
+    @controls.update # why is this here?
+    @state.action @controls
   end
 end

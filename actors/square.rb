@@ -9,14 +9,16 @@ class Square
               :min_vertical_velocity,
               :scene,
               :controls,
-              :dash_speed
+              :dash_speed,
+              :air_dash_speed
 
   attr_accessor :active_jumpsquat,
                 :full_hop,
                 :air_jumps,
                 :x, :y,
                 :current_vertical_velocity,
-                :active_dash
+                :active_dash,
+                :active_air_dash
 
   def initialize(scene, x_pos, y_pos, controls, params)
     @scene = scene
@@ -37,6 +39,10 @@ class Square
     @dash_speed = params['dash_speed']
     @dash_duration = params['dash_duration']
 
+    @air_dash_speed = params['air_dash_speed']
+    @air_dash_distance = params['air_dash_distance']
+    @air_dash_duration = @air_dash_distance / @air_dash_speed
+
     # hard coded?
     @facing = :right
 
@@ -55,6 +61,7 @@ class Square
     @jumpsquat_state = Jumpsquat.new self
     @jumping_state = Jumping.new self
     @dashing_state = Dashing.new self
+    @air_dashing_state = AirDashing.new self
 
     # initial state should be calculated, not hard coded - what if you spawn in air?
     @state = @standing_state
@@ -62,13 +69,12 @@ class Square
 
   # changes @state to corresponding state, as well as holding rules for entering state
   # e.g. when entering jumpsquat, set @active_jumpsquat to @jumpsquat_length to begin counting down jumpsquat frames
-  def enter_state(state)
+  def enter_state(state, opts = {})
     if state == :jumpsquat
       @full_hop = true
       @active_jumpsquat = @jumpsquat_length
       @state = @jumpsquat_state
     elsif state == :jumping
-      @current_vertical_velocity = @full_hop ? @initial_vertical_velocity : @initial_shorthop_vertical_velocity
       @state = @jumping_state
     elsif state == :crouching
       @state = @crouching_state
@@ -77,6 +83,10 @@ class Square
     elsif state == :dashing
       @active_dash = @dash_duration
       @state = @dashing_state
+    elsif state == :air_dashing
+      @active_air_dash = @air_dash_duration
+      @air_dashing_state.direction = opts[:direction]
+      @state = @air_dashing_state
     end
   end
 

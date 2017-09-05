@@ -17,10 +17,19 @@ class Jumping
     # - up to air jump
     # - down to fast fall
     # - left/right to move
+    # - dash to air dash
     b_down = controls.buttons_down
     # only jump when air_jumps > 0
     if @actor.air_jumps > 0 and controls.buttons_pressed_this_frame.include? controls.up
       air_jump
+    end
+    case controls.input_queue.check_queue
+    when :dash_left
+      @actor.enter_state :air_dashing, { :direction => :left }
+      return
+    when :dash_right
+      @actor.enter_state :air_dashing, { :direction => :right }
+      return
     end
     # only fast fall if velocity is NEGATIVE (on downward trajectory)
     if @actor.current_vertical_velocity <= 0 and b_down.include? controls.down

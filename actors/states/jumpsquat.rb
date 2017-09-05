@@ -21,6 +21,7 @@ class Jumpsquat
     # count down the active jumpsquat frames
     @actor.active_jumpsquat -= 1
     if @actor.active_jumpsquat <= 0
+      @actor.current_vertical_velocity = @actor.full_hop ? @actor.initial_vertical_velocity : @actor.initial_shorthop_vertical_velocity
       @actor.enter_state :jumping
     end
 

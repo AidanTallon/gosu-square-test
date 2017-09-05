@@ -10,6 +10,8 @@ square:
   min_vertical_velocity: -20
   dash_speed: 3
   dash_duration: 30
+  air_dash_speed: 5
+  air_dash_distance: 100
 
 rectangle:
   width: 80
@@ -23,6 +25,8 @@ rectangle:
   min_vertical_velocity: -25
   dash_speed: 2
   dash_duration: 30
+  air_dash_speed: 3
+  air_dash_distance: 50
 
 jigglysquare:
   width: 50
@@ -36,3 +40,5 @@ jigglysquare:
   min_vertical_velocity: -10
   dash_speed: 3
   dash_duration: 15
+  air_dash_speed: 5
+  air_dash_distance: 50
